@@ -1,4 +1,8 @@
 # *-* coding:utf-8 *-*
+from __future__ import unicode_literals
+
+from decimal import Decimal
+
 
 class Relationship:
 
@@ -31,6 +35,20 @@ class DataTable:
         self._columns = []
         self._references = []
         self._referenced = []
+
+    def _get_name(self):
+        print("Getter executado")
+        return self._name
+
+    def _set_name(self, _name):
+        print("Setter executado")
+        self._name = _name
+
+    def _del_name(self):
+        print("Delete executado")
+        raise AttributeError("Não pode deletar esse atributo")
+
+    name = property(_get_name, _set_name, _del_name)
 
     def add_column(self, name, kind, description=''):
         column = Column(name, kind, description=description)
@@ -68,6 +86,32 @@ class Column:
         self._description = description
         self._is_pk = False
 
+    def _validate(kind, data):
+        """
+            staticmethod é quando é um método estático
+            existe também o classmethod, que o primeiro argumento é a instância da classe
+            ex:
+            def _validate(cls, kind, name):
+                pass
+
+            validate = classmethod(_validate)
+        """
+        if kind == 'bigint':
+            if isinstance(data, int):
+                return True
+            return False
+        if kind == 'varchar':
+            if isinstance(data, str):
+                return True
+            return False
+        if kind == 'numeric':
+            try:
+                val = Decimal(data)
+            except:
+                return False
+            return True
+    validate = staticmethod(_validate)
+
     def __str__(self):
         _str = "Col: {} : {} {}".format(self._name, self._kind, self._description)
         return _str
@@ -83,5 +127,8 @@ class PrimaryKey(Column):
 
 if __name__ == '__main__':
     table = DataTable("Empreendimento")
+    table.name
+    table.name = "Alerta"
+    del table.name
     print(Column('IdEmpreendimento', 'bigint'))
     print(PrimaryKey(table,'IdEmpreendimento', 'bigint'))
