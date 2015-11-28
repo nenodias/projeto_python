@@ -7,11 +7,11 @@ class DataTableTest(unittest.TestCase):
     def setUp(self):
         try:
             self.table = DataTable('Teste')
-            # método que sempre será executado a cada "troca de testes"
+            # método que sempre será executado a cada "troca de testes" independente de algum erro não tratado ocorrer no setUp
             self.addCleanup(self.my_cleanup, ('cleanup executado'))
             self.out_file = open()
         except Exception as ex:
-            print(ex)
+            pass
 
     def test_add_column(self):
         self.assertEqual(0, len(self.table._columns) )
@@ -39,7 +39,10 @@ class DataTableTest(unittest.TestCase):
             self.fail('Chamada não gerou um erro do tipo Exception')
 
     def my_cleanup(self, msg):
+        ''' Método que faz liberação de recursos, permitindo que ocorra erros dentro do setUp '''
         print(msg)
 
     def tearDown(self):
-        print('Nunca Executado')
+        ''' Método que faz liberação de recursos, porém não é executado caso um erro não seja tratado no setUp '''
+        pass
+        #print('Nunca Executado')
