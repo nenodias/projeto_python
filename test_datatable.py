@@ -5,7 +5,13 @@ from domain import DataTable
 class DataTableTest(unittest.TestCase):
 
     def setUp(self):
-        self.table = DataTable('Teste')
+        try:
+            self.table = DataTable('Teste')
+            # método que sempre será executado a cada "troca de testes"
+            self.addCleanup(self.my_cleanup, ('cleanup executado'))
+            self.out_file = open()
+        except Exception as ex:
+            print(ex)
 
     def test_add_column(self):
         self.assertEqual(0, len(self.table._columns) )
@@ -30,4 +36,10 @@ class DataTableTest(unittest.TestCase):
         except Exception:
             error = True
         if not error:
-            self.fail("Chamada não gerou um erro do tipo Exception")
+            self.fail('Chamada não gerou um erro do tipo Exception')
+
+    def my_cleanup(self, msg):
+        print(msg)
+
+    def tearDown(self):
+        print('Nunca Executado')
