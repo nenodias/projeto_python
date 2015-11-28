@@ -1,3 +1,4 @@
+# *-* coding:utf-8 *-*
 import unittest
 
 HTML = '''\
@@ -7,13 +8,13 @@ HTML = '''\
     </head>
     <body>
         <table>
-        {}
+        \t{}
         </table>
     </body>
 </html>'''
 
-OK_TD = '<tr><td style="color: green;">{}</td></tr>'
-ERR_TD = '<tr><td style="color: red;">{}</td></tr>'
+OK_TD = '<tr><td style="color: green;">{}</td></tr>\n\t\t'
+ERR_TD = '<tr><td style="color: red;">{}</td></tr>\n\t\t'
 
 class HTMLTestResult(unittest.TestResult):
     def __init__(self, runner):

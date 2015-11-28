@@ -51,6 +51,7 @@ class DataTable:
     name = property(_get_name, _set_name, _del_name)
 
     def add_column(self, name, kind, description=''):
+        self._validate_kind(kind)
         column = Column(name, kind, description=description)
         self._columns.append(column)
         return column
@@ -62,6 +63,10 @@ class DataTable:
     def add_recerenced(self, name, bt, on):
         relationship = Relationship(name, by, self, on)
         self._referenced.append(relationship)
+
+    def _validate_kind(self, kind):
+        if not kind in ('bigint', 'numeric', 'varchar'):
+            raise Exception('Tipo Inválido')
 
 class Column:
     """ Representa uma coluna em um DataTable
