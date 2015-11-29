@@ -1,7 +1,7 @@
 # *-* coding:utf-8 *-*
 import unittest
 from unittest import mock
-from download_data import download_length, download, BUFF_SIZE
+from commands.download_data import download_length, download, BUFF_SIZE
 
 class DownloadTest(unittest.TestCase):
 
