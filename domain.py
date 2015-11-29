@@ -49,6 +49,8 @@ class DataTable:
         raise AttributeError("Não pode deletar esse atributo")
 
     name = property(_get_name, _set_name, _del_name)
+    references = property(lambda self: self._references)
+    referenced = property(lambda self: self._referenced)
 
     def add_column(self, name, kind, description=''):
         self._validate_kind(kind)
@@ -58,9 +60,9 @@ class DataTable:
 
     def add_references(self, name, to, on):
         relationship = Relationship(name, self, to, on)
-        self._references = relationship
+        self._references.append(relationship)
 
-    def add_recerenced(self, name, bt, on):
+    def add_referenced(self, name, by, on):
         relationship = Relationship(name, by, self, on)
         self._referenced.append(relationship)
 

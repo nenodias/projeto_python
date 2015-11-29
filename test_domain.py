@@ -1,6 +1,6 @@
 # *-* coding:utf-8 *-*
 import unittest
-from domain import DataTable
+from domain import DataTable, Column
 
 class DataTableTest(unittest.TestCase):
 
@@ -38,6 +38,26 @@ class DataTableTest(unittest.TestCase):
         if not error:
             self.fail('Chamada não gerou um erro do tipo Exception')
 
+    def test_add_relationship(self):
+        a_table = DataTable('A')
+        col = a_table.add_column('BId', 'bigint')
+        b_table = DataTable('B')
+        b_table.add_column('BId', 'bigint')
+        a_table.add_references('B', b_table, col)
+
+        self.assertEqual(1, len(a_table.references))
+        self.assertEqual(0, len(a_table.referenced))
+
+    def test_add_reverse_relationship(self):
+        a_table = DataTable('A')
+        col = a_table.add_column('BId', 'bigint')
+        b_table = DataTable('B')
+        col = b_table.add_column('BId', 'bigint')
+        b_table.add_referenced('A', a_table, col)
+
+        self.assertEqual(1, len(b_table.referenced))
+        self.assertEqual(0, len(b_table.references))
+
     def my_cleanup(self, msg):
         ''' Método que faz liberação de recursos, permitindo que ocorra erros dentro do setUp '''
         print(msg)
@@ -46,3 +66,20 @@ class DataTableTest(unittest.TestCase):
         ''' Método que faz liberação de recursos, porém não é executado caso um erro não seja tratado no setUp '''
         pass
         #print('Nunca Executado')
+
+class ColumnTest(unittest.TestCase):
+
+    def test_validate_bigint(self):
+        self.assertTrue(Column.validate('bigint', 100))
+        self.assertTrue(not Column.validate('bigint', 10.0))
+        self.assertTrue(not Column.validate('bigint', "Texto"))
+
+    def test_validate_numeric(self):
+        self.assertTrue(Column.validate('numeric', 10.0))
+        self.assertTrue(Column.validate('numeric', 100))
+        self.assertTrue(not Column.validate('numeric', "Texto"))
+
+    def test_validate_varchar(self):
+        self.assertTrue(Column.validate('varchar', "Texto"))
+        self.assertTrue(not Column.validate('varchar', 100))
+        self.assertTrue(not Column.validate('varchar', 10.0))
