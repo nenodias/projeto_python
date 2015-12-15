@@ -1,9 +1,10 @@
 # *-* coding:utf-8 *-*
+import os
 from decimal import Decimal
 
 total = Decimal('0')
 
-with open('../data/ExecucaoFinanceira.cvs', 'r') as data:
+with open(os.getcwd()+'/data/data/ExecucaoFinanceira.csv', 'r') as data:
     for line in data:
         try:
             info = line.split(';')
