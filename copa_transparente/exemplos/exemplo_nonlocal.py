@@ -2,6 +2,8 @@
 import os
 from decimal import Decimal
 
+#Quando vou acessar o parametro passado para o construtor que retorna o metodo "closurado"
+# Devo usar o nonlocal
 def make_counter(count):
     def counter():
         nonlocal count
