@@ -23,8 +23,7 @@ def get_value(info):
 
 with open(os.getcwd()+'/data/data/ExecucaoFinanceira.csv', 'r') as data:
     for line in data:
-        line = line.replace('\n', '')
-        total += get_value( line.split(';') )
+        total += get_value( line.strip().split(';') )
 
 print('Total gasto com contratos de menos de 11 dias {}'.format(total) )
 
