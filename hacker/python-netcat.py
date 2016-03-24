@@ -97,6 +97,16 @@ def run_command(command):
         output = subprocess.check_output(command, stderr=subprocess.STDOUT, shell=True)
     except:
         output = 'Failed to execute command.\r\n'
+    # envia os dados de saída de volta ao cliente
+    return output
+
+def client_handler(client_socket):
+    global upload
+    global execute
+    global command
+
+    # verifica se é upload
+    if
 
 def main():
     global listen
