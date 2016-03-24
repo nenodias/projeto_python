@@ -106,7 +106,51 @@ def client_handler(client_socket):
     global command
 
     # verifica se é upload
-    if
+    if len(upload_destination):
+
+        # Lê todos os bytes e grava em nosso destino
+        file_buff = ''
+
+        # permanece lendo os dados até que não haja mais nenhum disponível
+        while True:
+            data = client_socket.recv(1024)
+
+            if not data:
+                break
+            else:
+                file_buff += data
+
+        # agora tentaremos gravar esses bytes
+        try:
+            file_descriptor = open(upload_destination, 'wb')
+            file_descriptor.write(file_buff)
+            file_descriptor.close()
+
+            # confirma que gravamos o arquivo
+            client_socket.send('Successfully saved file to %s\r\n' %(upload_destination) )
+        except:
+            client_socket.send('Failed to save file to %s\r\n' %(upload_destination) )
+    if len(execute):
+        # executa o comando
+        output = run_command(execute)
+
+        client_socket.send(output)
+
+    # entra em outro laço se um shell de comandos foi solicitado
+    if command:
+        while True:
+            # mostra um prompt simples
+            client_socket.send('<BHP:#>')
+
+            cmd_buffer = ''
+            while '\n' not in cmd_buffer:
+                cmd_buffer += client_socket.recv(1024)
+
+            # envia de volta a saída do comando
+            response = run_command(cmd_buffer)
+
+            # envia de volta a resposta
+            client_socket.send(response)
 
 def main():
     global listen
