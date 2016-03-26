@@ -12,7 +12,7 @@ def hexdump(src, length=16):
         s = src[ i : i + length ]
         hexa = b' '.join( ['%0*X' %(digits, ord(x)) for x in s ] )
         text = b''.join([ x if 0x20 <= ord(x) < 0x7F else b'.' for x in s ])
-        result.append( b'%04X  %-*s  %s' %(i , length * ( digits + 1 ) ), hexa, text )
+        result.append( b'%04X  %-*s  %s' %(i , length * ( digits + 1 ), hexa, text ) )
     print(b'\n'.join(result))
 
 def receive_from(connection):
@@ -20,7 +20,7 @@ def receive_from(connection):
 
     # definimos um timeout de 2 segundos; de acordo com
     # seu alvo, pode ser que esse valor precise ser ajustado
-    connection.set_timeout(2)
+    connection.settimeout(2)
 
     try:
         # continua lendo em buffer até
@@ -85,7 +85,7 @@ def proxy_handler(client_socket, remotehost, remoteport, receive_first):
         remote_buffer = receive_from(remote_socket)
 
         if len(remote_buffer):
-            print('[<==] Received %d bytes from remote' %(remote_buffer) )
+            print('[<==] Received %d bytes from remote' %( len(remote_buffer) ) )
             hexdump(remote_buffer)
 
             # envia dados ao nosso handler de resposta
@@ -132,14 +132,15 @@ def main():
     if len(sys.argv[1:]) != 5:
         print('Usage: ./proxy.py [localhost] [localport] [remotehost] [remoteport] [receive_first]')
         print('Example: ./proxy.py 127.0.0.1 9000 10.12.132.1 9000 True')
+        print('Example: ./proxy.py 127.0.0.1 9000 google.com 80 True')
         sys.exit(0)
 
     # define parâmetros para ouvir localmente
     localhost = sys.argv[1]
-    localport = sys.argv[2]
+    localport = int(sys.argv[2])
 
     remotehost = sys.argv[3]
-    remoteport = sys.argv[4]
+    remoteport = int(sys.argv[4])
 
     # o código a seguir diz ao nosso proxy para conectar e receber dados
     # antes de enviar ao host remoto
