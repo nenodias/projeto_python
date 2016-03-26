@@ -1,4 +1,5 @@
 # *-* coding:utf-8 *-*
+# Só funciona com o python2
 import os
 import sys
 import socket
